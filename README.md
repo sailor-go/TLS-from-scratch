@@ -1,8 +1,6 @@
-本项目是一篇文章，以及附属的工具、示例、代码。本项目介绍TLS的原理、使用方法、实现一个最简单的TLS协议、介绍几个TLS的漏洞。
+这是2019年左右学习TLS时写的一篇文章，以及附属的工具、示例、代码。
 
-看完这个材料后，可以对TLS有个较为全面的认识了。
-
-
+本项目介绍TLS的原理、使用方法、实现一个最简单的TLS协议、介绍几个TLS的漏洞。看完这个材料后，可以对TLS有个较为全面的认识了。
 
 ## 前言：SSL与TLS
 
@@ -438,7 +436,9 @@ Bleinchenbacher是一位瑞士密码学家，他在1998年公开了一种对RSA�
 RSA就具有这样的性质：
 
 <center><I>E(m)  = m<sup>e</sup></I> mod <I>n</I></center> 
+
 <center><I>E(m) &middot; t<sup>e</sup> </I> mod <I>n</I> = <I>(mt)<sup>e</sup></I> mod <I>n</I> = <I>E(mt)</i></center>
+
 也就是说，如果一个攻击者拿到一段密文<I>E(m)</I>，他不知道对应的明文<I>m</I>，但是他可以很容易构造出<I>m</I>的整数倍所对应的密文<I>E(mt)</I>。
 
 举例来说，Alice为了从Bob那里购买一套商品，愿意支付100元，她将这个报价用RSA做了签名，委托Devil送给Bob，这时Devil就可以从中作梗，将报价篡改为200元。
@@ -450,11 +450,13 @@ RSA就具有这样的性质：
 在PKCS #1中，要加密的数据<i>M</i>按照如下格式被填充成<I>m</I>（ || 代表字符拼接）：
 
 <center><I>m</I> = 0x00 || 0x02 || [一些非0字节] || 0x00 + <I>M</I> </center>
+
 且<I>m</I>的长度等于RSA的模数<I>n</I>的长度。
 
 为了简便，设
 
 <center><I>2B</I> = 0x00 + 0x02 + [剩余全是0x00]</center>
+
 则符合填充的<I>m</I>的取值范围在<I>2B</I>和<I>3B</I>之间，也就是说，PKCS #1填充的数学含义是<I>2B <= m < 3B</I>。填充后，即使有攻击者构造出<I>E(mt)</I>，解密后的<I>mt</I>也大概率不会满足<I>2B <= mt < 3B</I>这个填充要求，因此解密者可以发现这个错误，从而识别攻击。
 
 #### Bleinchenbacher padding oracle
@@ -464,6 +466,7 @@ RSA就具有这样的性质：
 如果攻击者采用碰撞的方法，遍历各种<I>t</I>，构造出一系列的<I>E(mt)</I>去给Bob解密，并且他可以通过某种迹象判断<I>mt</I>是否符合PKCS#1 填充规范，则它又可以得到一个关于<I>m</I>的不等式：
 
 <center><i>  2B <= mt </i>mod<i> n < 3B </i></center>
+
 这个不等式缩小了<i>m</i>的取值范围，如果攻击者能得到多个这样的<I>t</I>，则可以不断逼近<i>m</i>的真实值，直到得到唯一的解，从而破解出<i>m</i>。
 
 这就是Bleinchenbacher padding oracle的思路。剩下的一个关键点就在于攻击者怎样能够判断<I>mt</I>是否符合填充。在SSL/TLS使用RSA加密进行密钥协商的时候，客户端使用RSA将premastersecret加密组装成client key exchange报文发送到服务端，服务端会对这个client key exchange报文进行解密，在某些SSL/TLS实现中，如果服务端发现RSA解密后的数据不符合填充，则会做出与正常流程不同的行为，这个不同的行为一不小心泄露了<I>mt</I>的信息，给攻击者提供了判断依据。事实上，oracle这个词的意思就是“启示”。
@@ -503,9 +506,11 @@ Alice（被害客户端）同Bob（被害服务器）建立SSL连接，使用CBC
 如果Devil就是有能力让Alice在SSL连接中发送任意的应用数据，那Devil就可以证实自己的猜测，他可以构造这样一段数据：
 
 <center><i>M<sub>j+1</sub> = C<sub>j</sub> &oplus; C<sub>i-1</sub> &oplus; P</i></center>
+
 其中<i>C<sub>j</sub></i>是Alice已经发送出的最后一个block密文，同时也是即将发出的下一个block的IV。那么Alice最终发出的密文是 
 
 <center><i>C<sub>j</sub> = E(C<sub>j</sub> &oplus; M<sub>j+1</sub>) = E(C<sub>j</sub> &oplus; C<sub>j</sub> &oplus; C<sub>i-1</sub> &oplus; P) = E(C<sub>i-1</sub> &oplus; P) </i></center> 
+
 注意等式的右边，这正是攻击者想看到的，前文已述如果等式<i>C<sub>i</sub> = E(C<sub>i-1</sub> &oplus; P)</i> 成立，即可断定<i>P = M<sub>i</sub></i>，现在又向前接近了一步，只需要判定<i>C<sub>j</sub> = C<sub>j</sub></i> ，而这个等式是很容易判断真伪的。
 
 也就是说，攻击者猜测一段明文，并且能让Alice发送一段与这个明文有关的一段数据，就能判断Alice之前发送的一段数据是否符合攻击者的猜测。
