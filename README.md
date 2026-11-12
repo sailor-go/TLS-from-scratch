@@ -612,11 +612,6 @@ Cookie:JSESSIONID=0123456789
 
 但这种方法毕竟是一个hello extension，对端可能会不支持这个扩展，有些SSL实现甚至会因为不认识扩展而关闭连接。因此不得不再增加一个TLS_EMPTY_RENEGOTIATION_INFO_SCSV，与renegotiation info extension一起做为法安全重协商的标记（但是RFC并不推荐clienthello中同时使用这两个标记）。另外RFC还不厌其烦得规定在各个场景下兼容性问题得处理办法。总之，这套机制乍看上去并不是很干净利落，但是碰上兼容性这档子事情，也无可奈何。
 
-## TLS1.3
-
-
-
-
 
 ## 参考资料
 
