@@ -146,7 +146,7 @@ RSA是一种非对称密码算法，这种算法可以用来进行密钥协商�
 
 下图就是TLS 1.2的握手完整过程了，其中*表示可选报文，可选报文和认证方式、客户端认证有关。
 
-![handshake message flow](reference/handshake message flow.JPG)
+![handshake message flow](reference/handshake_message_flow.JPG)
 
 首先客户端发送一个ClientHello消息，服务端则响应一个ServerHello消息，这两个hello消息用来对齐安全能力，如协议版本、cipher suite等。
 
@@ -168,7 +168,7 @@ SSL/TLS有一个算法套件（cipher suite）的概念，有的地方也叫做�
 
 以上是cipher suite在RFC的书面表达方式，还有一种常见的表述方式会在第三章介绍。在报文中，使用两个字节的ID来表示一个算法套件，例如在附件的”DHE密钥交换“抓包中的clienthello报文中，列出了客户端支持的cipher suite里欸表，如下图所示，使用0xC030来表示TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384，这是一个比较新的算法套件，2018年8月在RFC8422中定义。
 
-![cipher suite](reference/cipher suite.JPG)
+![cipher suite](reference/cipher_suite.JPG)
 
 cipher suite的名字已经给自己做了全面的”自我介绍“，然而在cipher suite协商过程中，还有很多”潜规则“，例如DH_RSA就需要证书中含有DH参数，并且使用RSA签名算法，并且证书的密钥用途中需要支持这么用，如果这些条件不满足，则不能使用这个算法套件。另外，算法套件还和SSL/TLS的版本号有联系，TLS1.2上能使用的，不一定能在TLS1.1上使用，反之亦然。
 
