@@ -436,7 +436,7 @@ Bleinchenbacher是一位瑞士密码学家，他在1998年公开了一种对RSA�
 RSA就具有这样的性质：
 
 <center><I>E(m)  = m<sup>e</sup></I> mod <I>n</I></center> 
-
+<br>
 <center><I>E(m) &middot; t<sup>e</sup> </I> mod <I>n</I> = <I>(mt)<sup>e</sup></I> mod <I>n</I> = <I>E(mt)</i></center>
 
 也就是说，如果一个攻击者拿到一段密文<I>E(m)</I>，他不知道对应的明文<I>m</I>，但是他可以很容易构造出<I>m</I>的整数倍所对应的密文<I>E(mt)</I>。
